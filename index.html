@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Badminton Team Division</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+      }
+
+      h2 {
+        text-align: center;
+        margin-top: 20px;
+        color: #333;
+      }
+
+      #players {
+        margin: 20px auto;
+        max-width: 400px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      #playerInputs input {
+        width: calc(100% - 60px);
+        margin-bottom: 10px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+
+      #playerInputs button {
+        width: 40px;
+        padding: 8px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+
+      #playerInputs button:hover {
+        background-color: #0056b3;
+      }
+
+      #teams {
+        margin: 20px auto;
+        max-width: 600px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      h3 {
+        color: #333;
+        margin-top: 0;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        margin-bottom: 5px;
+      }
+
+      button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+
+      button:hover {
+        background-color: #218838;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Badminton Team Division</h2>
+    <div id="players">
+      <div id="playerInputs">
+        <input type="text" placeholder="Enter player name" />
+      </div>
+      <button onclick="addPlayerInput()">Add</button>
+    </div>
+    <div id="teams"></div>
+
+    <script>
+      let players = [];
+
+      function addPlayerInput() {
+        const playerInputsDiv = document.getElementById("playerInputs");
+        const playerInput = document.createElement("input");
+        playerInput.type = "text";
+        playerInput.placeholder = "Enter player name";
+        playerInputsDiv.appendChild(playerInput);
+      }
+
+      function getPlayers() {
+        const playerInputs = document.querySelectorAll("#playerInputs input");
+        players = [];
+        playerInputs.forEach((input) => {
+          const playerName = input.value.trim();
+          if (playerName !== "") {
+            players.push(playerName);
+          }
+        });
+        return players;
+      }
+
+      function dividePlayersIntoTeams() {
+        getPlayers();
+
+        // Shuffle the array of players randomly
+        players.sort(() => Math.random() - 0.5);
+
+        // Divide the shuffled array into teams
+        const teams = [];
+        let teamIndex = 0;
+
+        players.forEach((player) => {
+          if (!teams[teamIndex]) {
+            teams[teamIndex] = [];
+          }
+
+          // Check if the team already has 2 players
+          if (teams[teamIndex].length < 2) {
+            teams[teamIndex].push(player);
+          } else {
+            teamIndex++;
+            teams[teamIndex] = [player];
+          }
+        });
+
+        displayTeams(teams);
+      }
+
+      function displayTeams(teams) {
+        const teamsDiv = document.getElementById("teams");
+        teamsDiv.innerHTML = "";
+
+        teams.forEach((team, index) => {
+          const teamHeading = document.createElement("h3");
+          teamHeading.textContent = `Team ${index + 1}`;
+          teamsDiv.appendChild(teamHeading);
+
+          const teamList = document.createElement("ul");
+          team.forEach((player) => {
+            const playerItem = document.createElement("li");
+            playerItem.textContent = player;
+            teamList.appendChild(playerItem);
+          });
+          teamsDiv.appendChild(teamList);
+        });
+      }
+    </script>
+
+    <button onclick="dividePlayersIntoTeams()">
+      Divide Players into Teams
+    </button>
+  </body>
+</html>
