@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Badminton Team Division</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -29,7 +30,6 @@
 
       #playerInputs input {
         width: 100%;
-        margin-bottom: 10px;
         padding: 8px;
         border: 1px solid #ccc;
         border-radius: 4px;
@@ -38,38 +38,44 @@
       }
 
       #playerInputs button {
-        width: 40px;
         padding: 8px;
-        background-color: #007bff;
+        background-color: #ff0000;
         color: #fff;
         border: none;
         border-radius: 4px;
         cursor: pointer;
         font-size: 16px;
         box-sizing: border-box;
+        margin-left: 3px;
       }
 
       #playerInputs button:hover {
-        background-color: #0056b3;
+        background-color: #900000;
       }
 
       #teams {
         margin: 20px auto;
         max-width: 600px;
-        background-color: #fff;
-        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .team {
+        padding: 10px;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        margin: 10px;
       }
 
       h3 {
-        color: #333;
-        margin-top: 0;
+        color: #0077ff;
+        margin: 0 0 5px;
       }
 
       ul {
         list-style-type: none;
         padding: 0;
+        margin: 0;
       }
 
       li {
@@ -78,7 +84,7 @@
 
       button {
         display: block;
-        margin: 10px auto auto;
+        margin: auto;
         padding: 10px 20px;
         background-color: #28a745;
         color: #fff;
@@ -92,90 +98,111 @@
       button:hover {
         background-color: #218838;
       }
+      .inputWrapper {
+        display: flex;
+        margin-bottom: 10px;
+        align-items: center;
+      }
     </style>
   </head>
   <body>
     <h2>Badminton Team Division</h2>
     <div id="players">
       <div id="playerInputs">
-        <input type="text" placeholder="Enter player name" />
+        <div class="inputWrapper">
+          <input type="text" placeholder="Enter player name" />
+          <button type="button" class="remove">Remove</button>
+        </div>
       </div>
-      <button onclick="addPlayerInput()">Add</button>
+      <button id="addPlayer">Add</button>
     </div>
+    <button id="dividePlayers">Divide Players into Teams</button>
     <div id="teams"></div>
 
     <script>
-      let players = [];
+      $(document).ready(function () {
+        let players = [];
 
-      function addPlayerInput() {
-        const playerInputsDiv = document.getElementById("playerInputs");
-        const playerInput = document.createElement("input");
-        playerInput.type = "text";
-        playerInput.placeholder = "Enter player name";
-        playerInputsDiv.appendChild(playerInput);
-      }
-
-      function getPlayers() {
-        const playerInputs = document.querySelectorAll("#playerInputs input");
-        players = [];
-        playerInputs.forEach((input) => {
-          const playerName = input.value.trim();
-          if (playerName !== "") {
-            players.push(playerName);
-          }
-        });
-        return players;
-      }
-
-      function dividePlayersIntoTeams() {
-        getPlayers();
-
-        // Shuffle the array of players randomly
-        players.sort(() => Math.random() - 0.5);
-
-        // Divide the shuffled array into teams
-        const teams = [];
-        let teamIndex = 0;
-
-        players.forEach((player) => {
-          if (!teams[teamIndex]) {
-            teams[teamIndex] = [];
-          }
-
-          // Check if the team already has 2 players
-          if (teams[teamIndex].length < 2) {
-            teams[teamIndex].push(player);
-          } else {
-            teamIndex++;
-            teams[teamIndex] = [player];
-          }
+        // Add player input
+        $("#addPlayer").click(function () {
+          $("#playerInputs").append(
+            '<div class="inputWrapper"><input type="text" placeholder="Enter player name"><button type="button" class="remove">Remove</button></div>'
+          );
         });
 
-        displayTeams(teams);
-      }
+        // Remove player input
+        $("#playerInputs").on("click", ".remove", function () {
+          $(this).parent().remove();
+        });
 
-      function displayTeams(teams) {
-        const teamsDiv = document.getElementById("teams");
-        teamsDiv.innerHTML = "";
+        // Divide players into teams
+        $("#dividePlayers").click(function () {
+          dividePlayersIntoTeams();
+        });
 
-        teams.forEach((team, index) => {
-          const teamHeading = document.createElement("h3");
-          teamHeading.textContent = `Team ${index + 1}`;
-          teamsDiv.appendChild(teamHeading);
-
-          const teamList = document.createElement("ul");
-          team.forEach((player) => {
-            const playerItem = document.createElement("li");
-            playerItem.textContent = player;
-            teamList.appendChild(playerItem);
+        function getPlayers() {
+          players = [];
+          $("#playerInputs input").each(function () {
+            const playerName = $(this).val().trim();
+            if (playerName !== "") {
+              players.push(playerName);
+            }
           });
-          teamsDiv.appendChild(teamList);
-        });
-      }
-    </script>
+          return players;
+        }
 
-    <button onclick="dividePlayersIntoTeams()">
-      Divide Players into Teams
-    </button>
+        function dividePlayersIntoTeams() {
+          getPlayers();
+
+          // Shuffle the array of players randomly
+          players.sort(() => Math.random() - 0.5);
+
+          // Divide the shuffled array into teams
+          const teams = [];
+          let teamIndex = 0;
+
+          players.forEach((player) => {
+            if (!teams[teamIndex]) {
+              teams[teamIndex] = [];
+            }
+
+            // Check if the team already has 2 players
+            if (teams[teamIndex].length < 2) {
+              teams[teamIndex].push(player);
+            } else {
+              teamIndex++;
+              teams[teamIndex] = [player];
+            }
+          });
+
+          displayTeams(teams);
+        }
+
+        function displayTeams(teams) {
+          const teamsDiv = $("#teams");
+          teamsDiv.empty();
+
+          teams.forEach((team, index) => {
+            // const teamHeading = $("<h3>").text(`Team ${index + 1}`);
+            // teamsDiv.append(teamHeading);
+
+            // const teamList = $("<ul>");
+            // team.forEach((player) => {
+            //   const playerItem = $("<li>").text(player);
+            //   teamList.append(playerItem);
+            // });
+            // teamsDiv.append(teamList);
+
+            var teamsContent = `<div class='team'>
+                <h3>Team ${index + 1}</h3><ul>`;
+            team.forEach((player) => {
+              teamsContent += `<li>${player}</li>`;
+            });
+            teamsContent += `</ul></div>`;
+            teamsDiv.append(teamsContent);
+          });
+        }
+      });
+    </script>
   </body>
 </html>
